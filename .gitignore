@@ -31,3 +31,19 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+
+# Latex files
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+*.auxlock
+*.pygtex
+*.pygstyle
+*_minted-*
