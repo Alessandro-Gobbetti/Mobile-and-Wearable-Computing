@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/start_btn"
+        android:layout_width="269dp"
+        android:layout_height="49dp"
+        android:layout_marginTop="64dp"
+        android:backgroundTint="@color/design_default_color_primary_dark"
+        android:onClick="startCount"
+        android:text="@string/start_btn"
+        app:layout_constraintBottom_toTopOf="@+id/show_count"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/step_btn"
+        android:layout_width="269dp"
+        android:layout_height="49dp"
+        android:layout_marginBottom="64dp"
+        android:backgroundTint="@color/design_default_color_secondary"
+        android:onClick="countUp"
+        android:text="@string/count_btn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/show_count" />
+
+    <TextView
+        android:id="@+id/show_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="0"
+        android:textSize="250sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/step_btn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/start_btn" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
