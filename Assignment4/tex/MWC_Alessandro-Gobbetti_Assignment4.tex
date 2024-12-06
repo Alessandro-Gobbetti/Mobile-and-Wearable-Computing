@@ -1,0 +1,126 @@
+\documentclass{usireport}
+
+%% VARIABLES
+\newcommand\namesurname{Alessandro Gobbetti}
+\newcommand\assignment{Assignment 4}
+\newcommand\assignmenttitle{}
+
+\newcommand\subject{Mobile and Wearable Computing}
+
+\begin{document}
+\maketitlepage
+
+\section{Introduction}
+This is the fourth assignment for the Mobile and Wearable Computing course. The assignment focuses on machine learning and cross validation. The assignment is based on tutorial 7 from the course material, in which physiological data collected from Empatica E4 wristband is used to predict the engagement level of a user. 
+
+The code is available at: \\\url{https://github.com/Alessandro-Gobbetti/Mobile-and-Wearable-Computing/tree/main/Assignment4}.
+
+
+\section{Dataset}
+In this section, we'll compute features and train models on the dataset provided for the assignment. The dataset contains EDA (Electrodermal Activity) measurements collected from different users. 
+
+The data is split into 15701 windows of 10 seconds each. For each window, the following features are computed:
+\begin{itemize}
+    \item Rise time: the amount of seconds the signal takes to rise from 10\% of the max value to 90\% of the max value, in each window. It is the measure of the ability of the signal to respond to fast inputs.
+    \item Decay time: opposite of rise time.
+    \item Dynamic Range: max - min.
+    \item Slope: this is the slope of a line that fits the data.
+    \item Absolute slope: absolute value of the slope.
+    \item First derivative mean: average of the first derivative
+    \item First derivative std: standard deviation of the first derivative
+\end{itemize}
+
+For comparison, we'll also use the dataset from tutorial 7, which is split into 7440 windows of 10 seconds each. The features are the same as the ones computed for the assignment dataset.
+
+For both datasets, we train XGBoost classifier and a Dummy classifier from Scikit-learn. \autoref{tab:5-fold-cross-validation} shows the 5-fold cross validation results, while \autoref{tab:LOSO-cross-validation} shows the leave-one-subject-out cross validation results.
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Model} & \textbf{T07 data} & \textbf{Assignment data} \\
+        \hline
+        XGBClassifier & 68.75 ± 0.78 \% & 63.40 ± 0.67 \% \\
+        DummyClassifier & 47.58 ± 0.31 \% & 50.49 ± 0.24 \% \\
+        \hline
+    \end{tabular}
+    \caption{Balanced accuracy 5-fold cross validation results for the two datasets.}
+    \label{tab:5-fold-cross-validation}
+\end{table}
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Model} & \textbf{T07 data} & \textbf{Assignment data} \\
+        \hline
+        XGBClassifier & 45.27 ± 23.23 \% & 41.92 ± 16.32 \% \\
+        DummyClassifier & 49.47 ± 1.02 \% & 49.83 ± 1.21 \% \\
+        \hline
+    \end{tabular}
+    \caption{Balanced accuracy Leave-one-subject-out cross validation results for the two datasets.}
+    \label{tab:LOSO-cross-validation}
+\end{table}
+
+
+The two models performs similarly on the two datasets. The XGBClassifier has a higher accuracy than the DummyClassifier, which is obviusly expected.
+
+Leave-one-subject-out cross validation leads to lower accuracy as users have different physiological responses to the same stimuli. Using one user only for testing can thus lead to lower results.
+
+
+\section{Leave One Day (per user) Out Cross Validation}
+In this section, we'll perform leave-one-day-out cross validation. The day is
+identified by the date column. Same dates from different users should be
+considered different “days”. In the validation paradigm only a single session from a single user is left out for validation. The rest of the data is used for training. 
+
+% code
+\begin{minted}{python}
+lodo_groups = eda_features.groupby(["username", "session"]).ngroup()
+\end{minted}
+
+The features are grouped by username and session, and a group number is assigned to each group. This group number is used to split the data into training and validation sets. This results in 27 groups for the assignment dataset.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Model} & \textbf{5-fold} & \textbf{LOSO} & \textbf{LODO} \\
+        \hline
+        XGBClassifier & 63.40 ± 0.67 \% & 41.92 ± 16.32 \% & 64.17 ± 2.27 \% \\
+        DummyClassifier & 50.49 ± 0.24 \% & 49.83 ± 1.21 \% & 50.21 ± 2.06 \% \\
+
+        \hline
+    \end{tabular}
+    \caption{Balanced accuracy for different models on the three cross validation techniques.}
+    \label{tab:LODO-cross-validation}
+\end{table}
+
+\autoref{tab:LODO-cross-validation} shows the results of the leave-one-day-out cross validation. This technique leads to higher accuracy as the model is trained on samples from the same user in the test set. Models can thus learn the user-specific patterns and perform better on the test set.
+
+\section{Other models}
+
+In addition to the XGBClassifier and DummyClassifier, we also trained a RandomForestClassifier, SVC, and GaussianNB. The results are shown in \autoref{tab:all-models-cross-validation}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Model} & \textbf{5-fold} & \textbf{LOSO} & \textbf{LODO} \\
+        \hline
+        XGBClassifier & 63.40 ± 0.67 \% & 41.92 ± 16.32 \% & 64.17 ± 2.27 \% \\
+        DummyClassifier & 50.49 ± 0.24 \% & 49.83 ± 1.21 \% & 50.21 ± 2.06 \% \\
+        SVC & 50.05 ± 0.12 \% & 47.03 ± 36.52 \% & 50.17 ± 0.38 \% \\
+        RandomForestClassifier & 63.60 ± 1.06 \% & 42.00 ± 16.24 \% & 64.02 ± 2.16 \% \\
+        GaussianNB & 54.81 ± 1.07 \% & 28.44 ± 22.48 \% & 54.79 ± 2.25 \% \\
+        \hline
+    \end{tabular}
+    \caption{Balanced accuracy for different models on the three cross validation techniques.}
+    \label{tab:all-models-cross-validation}
+\end{table}
+
+How do these models compare to the previous ones?
+
+The RandomForestClassifier performs similarly to the XGBClassifier, while the SVC and GaussianNB have lower accuracy. The SVC and GaussianNB have lower accuracy, and are thus not recommended for this task. The Support Vector Classifier is also way slower to train than the other models.
+
+\end{document}
