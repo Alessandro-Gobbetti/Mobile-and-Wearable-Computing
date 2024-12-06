@@ -66,7 +66,7 @@ For both datasets, we train XGBoost classifier and a Dummy classifier from Sciki
 
 The two models performs similarly on the two datasets. The XGBClassifier has a higher accuracy than the DummyClassifier, which is obviusly expected.
 
-Leave-one-subject-out cross validation leads to lower accuracy as users have different physiological responses to the same stimuli. Using one user only for testing can thus lead to lower results.
+Leave-one-subject-out cross validation leads to lower accuracy as users have different physiological responses to the same stimuli. Using one user only for testing can thus lead to lower results. However, this validation technique is useful in real-world scenarios where the model is trained on data from different users and tested on a new user. A good model should be able to generalize well to new users.
 
 
 \section{Leave One Day (per user) Out Cross Validation}
